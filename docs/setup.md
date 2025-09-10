@@ -133,5 +133,24 @@ The solution includes:
 
 ### Recommended Extensions
 
-- **C# Dev Kit** (VS Code)
-- **REST Client** for testing with `api-requests.http`
+**Visual Studio 2022+**:
+- Built-in HTTP file support (no extensions needed)
+- Integrated response viewer
+- IntelliSense for HTTP syntax
+
+**VS Code**:
+- **C# Dev Kit** 
+- **REST Client** (`humao.rest-client`) for testing with `.http` files
+
+### Troubleshooting HTTP Requests
+
+**Visual Studio**: Built-in support should work out of the box with .http files. Look for green play buttons (▶️) next to HTTP requests.
+
+**VS Code**: If REST Client extension doesn't work:
+
+1. **Verify extension**: Ensure "REST Client" by Huachao Mao is installed and enabled
+2. **Alternative**: Use Thunder Client, Postman, or curl commands
+3. **Token format**: Ensure JWT token extraction uses `{{login.response.body.$.Token}}` (capital T)
+4. **Request naming**: Add `# @name requestName` above HTTP requests for variable references
+
+See the main README for detailed testing instructions with multiple tools.

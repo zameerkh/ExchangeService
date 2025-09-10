@@ -14,6 +14,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ExchangeService.Api\ExchangeService.Api.csproj" />
+  <ProjectReference Include="..\src\WebApi\ExchangeService.Api\ExchangeService.Api.csproj" />
   </ItemGroup>
 </Project>

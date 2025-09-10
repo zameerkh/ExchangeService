@@ -1,4 +1,4 @@
-﻿@ExchangeService.Api_HostAddress = https://localhost:49898
+@ExchangeService.Api_HostAddress = https://localhost:49898
 
 # Step 1: Login to get a token (run this first)
 # @name login
@@ -13,7 +13,7 @@ Content-Type: application/json
 ###
 
 # Step 2: Token is automatically extracted from login response
-@token = {{login.response.body.$.token}}
+@token = {{login.response.body.$.Token}}
 
 # Get current user info (requires authentication)
 GET {{ExchangeService.Api_HostAddress}}/api/auth/me
@@ -47,6 +47,7 @@ Authorization: Bearer {{token}}
 If-None-Match: {{get_rates.response.headers.ETag}}
 
 ###
+
 
 # Health endpoints
 GET {{ExchangeService.Api_HostAddress}}/health/live
