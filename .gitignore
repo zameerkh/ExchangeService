@@ -1,0 +1,41 @@
+# Build output
+bin/
+obj/
+**/bin/
+**/obj/
+
+# Logs
+logs/
+**/logs/
+*.log
+*.log.*
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rider/VS Code
+.idea/
+.vscode/
+
+# Coverage
+TestResults/
+.coverage
+coverage.cobertura.xml
+
+# Publish artifacts
+publish/
+
+# Secrets
+*.secret.json
+*.secrets.json
+UserSecrets/
+
+# Docker local
+**/*.pid
+**/.docker/**

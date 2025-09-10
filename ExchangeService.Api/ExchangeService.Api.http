@@ -1,0 +1,41 @@
+﻿@ExchangeService.Api_HostAddress = https://localhost:49898
+
+# Step 1: Login to get a token (run this first)
+# @name login
+POST {{ExchangeService.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "premium",
+  "password": "demo123"
+}
+
+###
+
+# Step 2: Token is automatically extracted from login response
+@token = {{login.response.body.$.token}}
+
+# Get current user info (requires authentication)
+GET {{ExchangeService.Api_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###
+
+# Example: Convert currency (requires authentication)
+POST {{ExchangeService.Api_HostAddress}}/api/exchange/convert
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 100,
+  "inputCurrency": "USD",
+  "outputCurrency": "EUR"
+}
+
+###
+
+# Example: Get exchange rates (requires authentication)
+GET {{ExchangeService.Api_HostAddress}}/api/exchange/rates?inputCurrency=USD&outputCurrency=AUD
+Authorization: Bearer {{token}}
+
+###

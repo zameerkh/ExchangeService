@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  exchangeservice-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080;https://+:8081
+      - Caching__RedisConnectionString=redis:6379
+    depends_on:
+      - redis
+    networks:
+      - exchangeservice-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - exchangeservice-network
+    restart: unless-stopped
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8082:8081"
+    depends_on:
+      - redis
+    networks:
+      - exchangeservice-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  exchangeservice-network:
+    driver: bridge

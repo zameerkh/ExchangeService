@@ -1,0 +1,107 @@
+# Exchange Service API Test Requests
+# This file contains HTTP requests for testing the Exchange Service API
+# Place this in VS Code and use the REST Client extension to run these requests
+
+@ExchangeService.Api_HostAddress = https://localhost:49898
+
+###
+# Authentication Endpoints
+###
+
+# Step 1: Login to get a token (run this first)
+# @name login
+POST {{ExchangeService.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "premium",
+  "password": "demo123"
+}
+
+###
+
+# Alternative login users:
+# Admin user
+POST {{ExchangeService.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+# Regular user
+POST {{ExchangeService.Api_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user123"
+}
+
+###
+
+# Step 2: Token is automatically extracted from login response
+@token = {{login.response.body.$.token}}
+
+# Get current user info (requires authentication)
+GET {{ExchangeService.Api_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###
+
+# Exchange Service Endpoints
+###
+
+# Convert currency (requires authentication)
+POST {{ExchangeService.Api_HostAddress}}/api/exchange/convert
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "amount": 100,
+  "inputCurrency": "USD",
+  "outputCurrency": "EUR"
+}
+
+###
+
+# Get exchange rates (requires authentication)
+GET {{ExchangeService.Api_HostAddress}}/api/exchange/rates?inputCurrency=USD&outputCurrency=AUD
+Authorization: Bearer {{token}}
+
+###
+
+# Get multiple exchange rates
+GET {{ExchangeService.Api_HostAddress}}/api/exchange/rates?inputCurrency=EUR&outputCurrency=GBP,JPY,CAD
+Authorization: Bearer {{token}}
+
+###
+
+# Health Check Endpoints
+###
+
+# Basic health check (no authentication required)
+GET {{ExchangeService.Api_HostAddress}}/health
+
+###
+
+# Detailed health check (no authentication required)
+GET {{ExchangeService.Api_HostAddress}}/health-detailed
+
+###
+
+# Health check UI (open in browser)
+GET {{ExchangeService.Api_HostAddress}}/healthchecks-ui
+
+###
+
+# API Documentation
+###
+
+# Swagger/OpenAPI documentation (open in browser)
+GET {{ExchangeService.Api_HostAddress}}/swagger
+
+###
