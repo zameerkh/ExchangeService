@@ -26,6 +26,9 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxConcurrentUpgradedConnections = 100;
 });
 
+// TODO(PROD): Consider tuning graceful shutdown
+// builder.Host.ConfigureHostOptions(opt => opt.ShutdownTimeout = TimeSpan.FromSeconds(30));
+
 // Configure JSON options to limit depth
 builder.Services.Configure<JsonOptions>(options =>
 {
@@ -42,6 +45,8 @@ var loggerConfig = new LoggerConfiguration()
     .Enrich.WithProcessId()
     .Enrich.WithThreadId()
     .WriteTo.Console();
+
+// TODO(PROD): Add Serilog enricher to include TraceId/SpanId in logs for cross-system correlation.
 
 // Add file sink only in Development (avoid file writes in containerized production)
 if (builder.Environment.IsDevelopment())
@@ -185,6 +190,7 @@ builder.Services.AddCors(options =>
             // Production: Require explicit origins from config
             if (allowedOrigins.Contains("*"))
             {
+                // TODO(PROD): Set CORS:AllowedOrigins to explicit values in production configuration
                 throw new InvalidOperationException("Wildcard origins (*) not allowed in production. Configure explicit origins.");
             }
             policy.WithOrigins(allowedOrigins);
@@ -251,6 +257,7 @@ builder.Services.AddScoped<IExchangeRateApiClient>(provider =>
 // Add background service for cache warming
 // Temporarily disabled to troubleshoot HttpClient configuration
 // builder.Services.AddHostedService<CacheWarmupService>();
+// TODO(PROD): Re-enable cache warmup after verifying HttpClient and cache connectivity in your environment.
 
 var app = builder.Build();
 

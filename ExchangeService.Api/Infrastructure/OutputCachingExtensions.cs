@@ -72,6 +72,8 @@ public class ETagMiddleware
             return;
         }
 
+    // TODO(PROD): Consider skipping ETag for large payloads or non-cacheable content types to avoid double buffering cost.
+
         // Create a memory stream to capture the response
         var originalBodyStream = context.Response.Body;
         using var responseBodyStream = new MemoryStream();

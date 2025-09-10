@@ -68,6 +68,7 @@ public static class AuthenticationExtensions
                     var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerHandler>>();
                     var userId = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                     logger.LogDebug("JWT token validated for user: {UserId}", userId);
+                    // TODO(PROD): If using token revocation, check token against revocation list here or enable IdP introspection.
                     return Task.CompletedTask;
                 }
             };

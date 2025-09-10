@@ -60,6 +60,9 @@ public static class ServiceCollectionExtensions
             .AddCheck<ExchangeRateApiHealthCheck>("exchange_rate_api", HealthStatus.Degraded, new[] { "api", "external" })
             .AddCheck("self", () => HealthCheckResult.Healthy("API is running"), new[] { "self" });
 
+    // TODO(PROD): Mark one or more checks as "ready" for the readiness probe, e.g. external API or Redis.
+    // Example: .AddCheck<SomeDependency>("dep_name", failureStatus: HealthStatus.Unhealthy, tags: new[] { "ready" })
+
         var cachingOptions = configuration.GetSection(CachingOptions.SectionName).Get<CachingOptions>();
         if (cachingOptions?.UseRedis == true)
         {
@@ -132,6 +135,9 @@ public static class ServiceCollectionExtensions
                 .AddHttpClientInstrumentation()
                 .AddRuntimeInstrumentation() // Add HTTP runtime instrumentation (GC, threadpool)
                 .AddPrometheusExporter());
+
+    // TODO(PROD): Add OTLP exporters (traces/metrics/logs) to send data to your collector/agent.
+    // Configure endpoints via configuration and enable conditionally for non-Dev environments.
 
         return services;
     }

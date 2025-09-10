@@ -32,4 +32,6 @@ curl -H "Authorization: Bearer <your-jwt-token>" \
 - **[Security](docs/security.md)** - Authentication, authorization, and security headers
 - **[Contributing](docs/contributing.md)** - Development workflow and standards
 
+- 🚀 New: **[Next steps for production](docs/next-steps-for-production.md)** — targeted checklist of gaps to close before go-live
+
 API documentation available at `/swagger` (development) or `/api-docs` (production).

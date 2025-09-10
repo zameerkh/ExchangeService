@@ -15,6 +15,7 @@ public static class RateLimitingExtensions
         services.AddRateLimiter(options =>
         {
             // Global rate limiter - 100 requests per minute per IP
+            // TODO(PROD): For multi-instance deployments, consider a distributed rate limiter or enforce limits at the gateway/CDN.
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
                 httpContext => RateLimitPartition.GetFixedWindowLimiter(
                     partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",

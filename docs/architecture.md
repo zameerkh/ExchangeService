@@ -71,72 +71,94 @@ Production middleware pipeline (order matters):
 
 ```
 src/
-├── Domain/                     # Core business entities
-│   ├── Entities/
-│   │   └── ExchangeRate.cs     # Exchange rate business entity
-│   └── ValueObjects/
-│       ├── Currency.cs         # Currency value object
-│       └── Money.cs            # Money value object
-│
-├── Application/                # Business logic and interfaces
-│   └── Common/
-│       └── Interfaces/
-│           ├── ICacheService.cs          # Caching abstraction
-│           └── IExchangeRateService.cs   # Exchange rate contract
-│
-├── Infrastructure/             # External service implementations
-│   ├── Configuration/
-│   │   └── ExchangeRateApiOptions.cs    # API configuration
-│   ├── Services/
-│   │   └── HybridCacheService.cs        # Caching implementation
-│   └── DependencyInjection.cs           # Service registration
-│
-└── ExchangeService.Api/        # Web API layer
-    ├── Controllers/
-    │   ├── ExchangeController.cs        # Currency conversion endpoints
-    │   └── HealthController.cs          # Health check endpoints
-    ├── Infrastructure/
-    │   └── GlobalExceptionMiddleware.cs  # Error handling
-    ├── Models/
-    │   ├── ExchangeRequest.cs           # Request DTOs
-    │   ├── ExchangeResponse.cs          # Response DTOs
-    │   └── ExchangeRequestValidator.cs  # Input validation
-    └── Program.cs                       # Application bootstrap
+# Architecture
+
+Clean Architecture with a production-grade middleware pipeline, typed HttpClient, and correlation/trace propagation.
+
+## Layers (overview)
+
+- API (controllers, middleware, configuration)
+- Application/Services (use cases, validation)
+- Infrastructure (external clients, caching, configuration)
+- Domain (entities, value objects, pure logic)
+
+## Project structure (repo)
+
+```
+.
+├── ExchangeService.sln
+├── README.md
+├── docs/
+├── Directory.Packages.props
+├── Dockerfile
+├── docker-compose.yml
+├── deploy.ps1 / deploy.sh
+├── ExchangeService.Api/
+│   ├── Controllers/
+│   ├── Infrastructure/            # Middleware & extensions (security, rate limiting, etc.)
+│   ├── Models/
+│   ├── Services/                  # API-layer service adapters
+│   └── Program.cs
+├── src/
+│   ├── Domain/                    # Pure domain: entities, value objects
+│   ├── Application/               # Use cases, interfaces (e.g., IExchangeRateService)
+│   └── Infrastructure/            # External impls (cache, options, DI wiring)
+└── tests/
+    ├── ExchangeService.UnitTests/
+    └── ExchangeService.IntegrationTests/
 ```
 
-## Design Patterns
+## System map
 
-### Clean Architecture
-- **Dependency inversion** - outer layers depend on inner layers
-- **Separation of concerns** - each layer has specific responsibilities
-- **Testability** - business logic isolated from infrastructure
+```
+Controllers/APIs ──→ Services ──→ HttpClient (Typed) ──→ External APIs
+       │                │              │                    │
+       │                │              │                    ├─ Exchange Rate API
+       │                │              │                    └─ Future: Currency DB
+       │                │              │
+       │                │              └─ Polly (Timeout → Retry → Circuit Breaker)
+       │                │
+       │                └─ IExchangeRateApiClient (Decorator)
+       │                   ├─ ExchangeRateApiClient (Base)
+       │                   └─ HybridCachedExchangeRateApiClient (Cache)
+       │
+       └─ Dependencies: Cache (Memory/Redis), Config, Validators
+```
 
-### Domain-Driven Design
-- **Value objects** (Currency, Money) for type safety
-- **Entities** (ExchangeRate) with business behavior
-- **Rich domain models** with encapsulated logic
+## Request flow (correlation & caching)
 
-### CQRS (Planned)
-- **Commands** for state-changing operations
-- **Queries** for data retrieval
-- **Separation** of read and write models
+```
+[Request] → [Correlation ID] → [Rate Limit] → [Auth] → [Controller]
+    │              │               │                │
+    │              ├─ Response header: X-Correlation-ID
+    │              ├─ W3C traceparent propagation
+    │              └─ OpenTelemetry spans/attributes
+    │
+[Response] ← ETag/304 ← OutputCache ← Service (IExchangeRateApiClient → Cache → HTTP)
+```
 
-## Technology Stack
+## Middleware pipeline (production order)
 
-### Core Framework
-- **.NET 8** - Latest LTS runtime
-- **ASP.NET Core** - Web API framework
-- **C# 12** - Latest language features
+1) GlobalExceptionMiddleware
+2) CorrelationMiddleware
+3) UseRequestDecompression
+4) UseRateLimiter
+5) UseHttpsRedirection
+6) UseHsts (non-Development)
+7) SecurityHeadersMiddleware
+8) UseSerilogRequestLogging
+9) UseRouting
+10) UseCors
+11) UseAuthentication
+12) UseAuthorization
+13) UseResponseCompression
+14) UseOutputCache
+15) UseETag
 
-### External Dependencies
-- **Serilog** - Structured logging
-- **FluentValidation** - Input validation
-- **OpenTelemetry** - Observability
-- **Polly** - Resilience patterns
-- **Redis** - Distributed caching (optional)
+## Decorator pattern (IExchangeRateApiClient)
 
-### Development Tools
-- **Central Package Management** - Consistent versioning
-- **EditorConfig** - Code formatting
-- **Docker** - Containerization
-- **Swagger/OpenAPI** - API documentation
+- Base: `ExchangeRateApiClient` (typed HttpClient + Polly resilience)
+- Decorator: `HybridCachedExchangeRateApiClient` (hybrid cache, stampede protection)
+- DI: Decorator registered as `IExchangeRateApiClient`
+
+## Notes
