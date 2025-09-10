@@ -35,3 +35,6 @@ curl -H "Authorization: Bearer <your-jwt-token>" \
 - 🚀 New: **[Next steps for production](docs/next-steps-for-production.md)** — targeted checklist of gaps to close before go-live
 
 API documentation available at `/swagger` (development) or `/api-docs` (production).
+
+Dev helpers
+- VS Code HTTP collection: `ExchangeService.Api/ExchangeService.Api.http` — login, auth/me, convert, rates (with ETag), health, swagger json, metrics.

@@ -35,7 +35,38 @@ Content-Type: application/json
 ###
 
 # Example: Get exchange rates (requires authentication)
+# @name get_rates
 GET {{ExchangeService.Api_HostAddress}}/api/exchange/rates?inputCurrency=USD&outputCurrency=AUD
 Authorization: Bearer {{token}}
+
+###
+
+# Conditional GET using ETag (second call should return 304 Not Modified if unchanged)
+GET {{ExchangeService.Api_HostAddress}}/api/exchange/rates?inputCurrency=USD&outputCurrency=AUD
+Authorization: Bearer {{token}}
+If-None-Match: {{get_rates.response.headers.ETag}}
+
+###
+
+# Health endpoints
+GET {{ExchangeService.Api_HostAddress}}/health/live
+
+###
+
+GET {{ExchangeService.Api_HostAddress}}/health
+
+###
+
+GET {{ExchangeService.Api_HostAddress}}/health/ready
+
+###
+
+# OpenAPI (Swagger) document
+GET {{ExchangeService.Api_HostAddress}}/swagger/v1/swagger.json
+
+###
+
+# Prometheus metrics (open in Development; restricted in Production)
+GET {{ExchangeService.Api_HostAddress}}/metrics
 
 ###
