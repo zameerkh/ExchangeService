@@ -37,4 +37,4 @@ curl -H "Authorization: Bearer <your-jwt-token>" \
 API documentation available at `/swagger` (development) or `/api-docs` (production).
 
 Dev helpers
-- VS Code HTTP collection: `ExchangeService.Api/ExchangeService.Api.http` — login, auth/me, convert, rates (with ETag), health, swagger json, metrics.
+- VS Code HTTP collection: `src/WebApi/ExchangeService.Api/ExchangeService.Api.http` — login, auth/me, convert, rates (with ETag), health, swagger json, metrics.

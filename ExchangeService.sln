@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeService.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeService.Infrastructure", "src\Infrastructure\ExchangeService.Infrastructure.csproj", "{C3D4E5F6-A7B8-9012-CDEF-345678901234}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeService.Api", "ExchangeService.Api\ExchangeService.Api.csproj", "{D4E5F6A7-B8C9-0123-DEF4-56789012345A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExchangeService.Api", "src\WebApi\ExchangeService.Api\ExchangeService.Api.csproj", "{D4E5F6A7-B8C9-0123-DEF4-56789012345A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
